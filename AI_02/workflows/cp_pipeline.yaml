@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: ocr-pipeline7
+  labels:
+    scenarios.ai.sap.com/id: "ocr_invoice_non_po"
+    ai.sap.com/version: "0.51"
+  annotations:
+    scenarios.ai.sap.com/name: "ocr_invoice_non_po"
+    executables.ai.sap.com/name: "ocr-pipeline7"
+spec:
+  entrypoint: ocr-pipeline
+
+  imagePullSecrets:
+    - name: i751878
+  templates:
+  - name: ocr-pipeline
+    metadata:
+      labels:
+        ai.sap.com/resourcePlan: starter
+    container:
+      image: docker.io/jheisonurzola/ocr:07
+      command: ["/bin/sh", "-c"]
+      args: ["python3 main.py"]
