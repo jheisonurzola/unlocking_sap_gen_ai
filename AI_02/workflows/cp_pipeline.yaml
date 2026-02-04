@@ -3,11 +3,11 @@ kind: WorkflowTemplate
 metadata:
   name: ocr-pipeline7
   labels:
-    scenarios.ai.sap.com/id: "ocr_invoice_non_po"
+    scenarios.ai.sap.com/id: "i751878"
     ai.sap.com/version: "0.51"
   annotations:
-    scenarios.ai.sap.com/name: "ocr_invoice_non_po"
-    executables.ai.sap.com/name: "ocr-pipeline7"
+    scenarios.ai.sap.com/name: "i751878"
+    executables.ai.sap.com/name: "i751878"
 spec:
   entrypoint: ocr-pipeline
 
