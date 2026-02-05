@@ -1,0 +1,62 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: ocr-pipeline8 # executable ID, must be unique across your SAP AI Core instance, for example use `server-pipeline-yourname-1234`
+  annotations:
+    scenarios.ai.sap.com/description: "ocr_invoice_non_po"
+    scenarios.ai.sap.com/name: "ocr_invoice_non_po"
+    executables.ai.sap.com/description: "ocr-pipeline8"
+    executables.ai.sap.com/name: "ocr-pipeline8"
+    artifacts.ai.sap.com/ocrmodel.kind: "model" # Suggest the kind of artifact to input.
+  labels:
+    scenarios.ai.sap.com/id: "ocr_invoice_non_po"
+    ai.sap.com/version: "0.52"
+spec:
+  inputs:
+    artifacts:
+      - name: ocrmodel # placeholder name, do not add `-` in value use only alphanumeric chars
+    parameters:
+      - name: greetmessage # placeholder name
+        type: string # required for every parameters
+  template:
+    apiVersion: "serving.kserve.io/v1beta1"
+    metadata:
+      annotations: |
+        autoscaling.knative.dev/metric: concurrency   # condition when to scale
+        autoscaling.knative.dev/target: 1
+        autoscaling.knative.dev/targetBurstCapacity: 0
+      labels: |
+        ai.sap.com/resourcePlan: starter # computing power
+    spec: |
+      predictor:
+        imagePullSecrets:
+          - name: fury-fpsptpocrje-ai   # your docker registry secret
+        minReplicas: 1
+        maxReplicas: 3    # how much to scale
+        containers:
+        - name: kserve-container
+          image: "docker.io/jheisonurzola/ocr:08"
+          ports:
+            - containerPort: 3000    # customizable port
+              protocol: TCP
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+                set -e &&
+                echo "Starting Flask check server on :3000" &&
+                gunicorn -b 0.0.0.0:3000 --workers 2 --threads 4 --timeout 120 server:app
+          env:
+            - name: TIMEOUT
+              value: "30"
+            - name: ALWAYS_200
+              value: "true"              
+            - name: DEBUG
+              value: "true"
+            - name: SERVICE_PORT
+              value: "9001"
+            - name: CP_CLIENT_ID
+              value: "sb-cloneec0f02271e2045e3889181f10673d75c!b398265|connectivity!b7"
+            - name: CP_CLIENT_SECRET
+              value: "520610ae-aa0b-4d3a-8ade-c1b0ebc97b65$KnRGiLTCcw78BTl2TZ_LSOxr4ZMP1hOdywuxxgg2thA="
+            - name: CP_TOKEN_SERVICE_URL
+              value: "https://i751878-7unmyyvx.authentication.us10.hana.ondemand.com/oauth/token"
