@@ -30,7 +30,7 @@ spec:
     spec: |
       predictor:
         imagePullSecrets:
-          - name: fury-fpsptpocrje-ai   # your docker registry secret
+          - name: i751878   # your docker registry secret
         minReplicas: 1
         maxReplicas: 3    # how much to scale
         containers:
